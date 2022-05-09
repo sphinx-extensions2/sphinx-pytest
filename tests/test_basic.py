@@ -1,27 +1,14 @@
-# sphinx-pytest
-
-[![PyPI][pypi-badge]][pypi-link]
-
-Helpful pytest fixtures for sphinx extensions.
-
-Sphinx is annoying, because the modularity is not great,
-meaning that there is no real way just to convert single documents in isolation, etc.
-
-This extension mainly provides some pytest fixtures to "simulate" converting some source text to docutils AST at different stages; before transforms, after transforms, etc.
+def test_basic(sphinx_doctree):
+    result = sphinx_doctree("abc")
+    assert (
+        result.pformat()
+        == '<document source="<src>/index.rst">\n    <paragraph>\n        abc'
+    )
 
 
-## Installation
-
-```
-pip install sphinx-pytest
-```
-
-## Examples
-
-```python
 def test_no_transforms(sphinx_doctree_no_tr):
     """Return the doctree, before any transforms have been applied."""
-    result = sphinx_doctree_no_transforms(".. _target:\n\nheader\n------\n")
+    result = sphinx_doctree_no_tr(".. _target:\n\nheader\n------\n")
     assert (
         result.pformat()
         == """\
@@ -32,9 +19,8 @@ def test_no_transforms(sphinx_doctree_no_tr):
             header
 """.rstrip()
     )
-```
 
-```python
+
 def test_with_transforms(sphinx_doctree):
     """Return the doctree, after transforms (but not post-transforms)."""
     result = sphinx_doctree(".. _target:\n\nheader\n------\n")
@@ -48,8 +34,3 @@ def test_with_transforms(sphinx_doctree):
             header
 """.rstrip()
     )
-```
-
-
-[pypi-badge]: https://img.shields.io/pypi/v/sphinx_pytest.svg
-[pypi-link]: https://pypi.org/project/sphinx_pytest
