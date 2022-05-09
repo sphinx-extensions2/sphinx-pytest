@@ -85,7 +85,6 @@ class CreateDoctree:
         self,
         content: str,
         filename: str = "index.rst",
-        conf: dict[str, Any] | None = None,
         **kwargs,
     ) -> AppWrapper:
         """Create doctrees for a set of files."""
@@ -97,7 +96,7 @@ class CreateDoctree:
             self._app_cls(
                 srcdir=path(str(self.srcdir)),
                 buildername=self.buildername,
-                confoverrides=conf or {},
+                confoverrides=self._confoverrides,
                 **kwargs,
             )
         ).build()
