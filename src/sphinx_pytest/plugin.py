@@ -1,6 +1,7 @@
 """The pytest plugin."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -63,7 +64,7 @@ class AppWrapper:
     def pformat(self, docname: str = "index") -> str:
         """Get copy of a doctree."""
         text = self.doctrees[docname].pformat()
-        return text.replace(str(self._app.srcdir), "<src>").rstrip()
+        return text.replace(str(self._app.srcdir) + os.sep, "<src>/").rstrip()
 
 
 class CreateDoctree:
