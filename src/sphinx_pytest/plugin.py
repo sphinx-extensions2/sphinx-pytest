@@ -8,6 +8,7 @@ from typing import Any
 from docutils import nodes
 from docutils.core import Publisher
 import pytest
+from sphinx.environment import BuildEnvironment
 from sphinx.testing.path import path
 from sphinx.testing.util import SphinxTestApp
 
@@ -44,6 +45,11 @@ class AppWrapper:
         return self._app
 
     @property
+    def env(self) -> BuildEnvironment:
+        assert self._app.env is not None
+        return self._app.env
+
+    @property
     def builder(self) -> DoctreeBuilder:
         return self._app.builder  # type: ignore
 
@@ -62,9 +68,23 @@ class AppWrapper:
         return self.builder.doctrees
 
     def pformat(self, docname: str = "index") -> str:
-        """Get copy of a doctree."""
+        """Return an indented pseudo-XML representation.
+
+        The src directory is replaced with <src>, for reproducibility.
+        """
         text = self.doctrees[docname].pformat()
         return text.replace(str(self._app.srcdir) + os.sep, "<src>/").rstrip()
+
+    def get_resolved_doctree(self, docname: str = "index") -> nodes.document:
+        """Return the doctree after post-transforms.
+
+        Note only builder agnostic post-transforms will be applied, e.g. not ones for 'html' etc.
+        """
+        doctree = self.doctrees[docname].deepcopy()
+        self.env.apply_post_transforms(doctree, docname)
+        # note, this does not resolve toctrees, as in:
+        # https://github.com/sphinx-doc/sphinx/blob/05a898ecb4ff8e654a053a1ba5131715a4514812/sphinx/environment/__init__.py#L538
+        return doctree
 
 
 class CreateDoctree:
