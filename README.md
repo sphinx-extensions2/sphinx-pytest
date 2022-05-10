@@ -23,6 +23,7 @@ from sphinx_pytest.plugin import CreateDoctree
 
 def test_no_transforms(sphinx_doctree_no_tr: CreateDoctree):
     """Return the doctree, before any transforms have been applied."""
+    sphinx_doctree_no_tr.set_conf({"language": "en"})
     result = sphinx_doctree_no_transforms(".. _target:\n\nheader\n------\n")
     assert (
         result.pformat()
@@ -37,7 +38,7 @@ def test_no_transforms(sphinx_doctree_no_tr: CreateDoctree):
 ```
 
 ```python
-def test_with_transforms(sphinx_doctree):
+def test_with_transforms(sphinx_doctree: CreateDoctree):
     """Return the doctree, after transforms (but not post-transforms)."""
     result = sphinx_doctree(".. _target:\n\nheader\n------\n")
     assert (
