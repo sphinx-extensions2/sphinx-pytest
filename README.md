@@ -19,7 +19,9 @@ pip install sphinx-pytest
 ## Examples
 
 ```python
-def test_no_transforms(sphinx_doctree_no_tr):
+from sphinx_pytest.plugin import CreateDoctree
+
+def test_no_transforms(sphinx_doctree_no_tr: CreateDoctree):
     """Return the doctree, before any transforms have been applied."""
     result = sphinx_doctree_no_transforms(".. _target:\n\nheader\n------\n")
     assert (
