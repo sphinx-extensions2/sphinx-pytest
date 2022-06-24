@@ -41,5 +41,6 @@ def test_html_builder(sphinx_doctree):
     result = sphinx_doctree(".. only:: html\n\n   abc\n\n.. only:: latex\n\n   xyz\n")
     assert (
         result.get_resolved_pformat()
-        == '<document source="<src>/index.rst">\n    <paragraph>\n        abc\n    <comment xml:space="preserve">'
+        == '<document source="<src>/index.rst">\n    <paragraph>\n        abc'
+        '\n    <comment xml:space="preserve">'
     )
