@@ -34,3 +34,12 @@ def test_with_transforms(sphinx_doctree):
             header
 """.rstrip()
     )
+
+
+def test_html_builder(sphinx_doctree):
+    sphinx_doctree.buildername = "html"
+    result = sphinx_doctree(".. only:: html\n\n   abc\n\n.. only:: latex\n\n   xyz\n")
+    assert (
+        result.get_resolved_pformat()
+        == '<document source="<src>/index.rst">\n    <paragraph>\n        abc\n    <comment xml:space="preserve">'
+    )
