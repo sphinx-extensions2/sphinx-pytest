@@ -1,9 +1,10 @@
 """The pytest plugin."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from docutils import nodes
 from docutils.core import Publisher
@@ -32,6 +33,25 @@ def sphinx_doctree_no_tr(make_app: type[SphinxTestApp], tmp_path: Path, monkeypa
 
     monkeypatch.setattr(Publisher, "apply_transforms", _apply_transforms)
     yield CreateDoctree(app_cls=make_app, srcdir=tmp_path / "src")
+
+
+class Doctrees(Mapping):
+    """A mapping of doctree names to doctrees."""
+
+    def __init__(self, env: BuildEnvironment):
+        self._env = env
+
+    def __getitem__(self, key: str) -> nodes.document:
+        try:
+            return self._env.get_doctree(key)
+        except FileNotFoundError:
+            raise KeyError(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._env.found_docs)
+
+    def __len__(self) -> int:
+        return len(self._env.found_docs)
 
 
 class AppWrapper:
@@ -63,9 +83,12 @@ class AppWrapper:
         return text.replace(str(self._app.srcdir), "<src>")
 
     @property
-    def doctrees(self) -> dict[str, nodes.document]:
+    def doctrees(self) -> dict[str, nodes.document] | Doctrees:
         """The built doctrees (before post-transforms)."""
-        return self.builder.doctrees
+        try:
+            return self.builder.doctrees
+        except AttributeError:
+            return Doctrees(self.env)
 
     def pformat(self, docname: str = "index") -> str:
         """Return an indented pseudo-XML representation.
@@ -85,6 +108,11 @@ class AppWrapper:
         # note, this does not resolve toctrees, as in:
         # https://github.com/sphinx-doc/sphinx/blob/05a898ecb4ff8e654a053a1ba5131715a4514812/sphinx/environment/__init__.py#L538
         return doctree
+
+    def get_resolved_pformat(self, docname: str = "index") -> str:
+        """Return the pformat of the doctree after post-transforms."""
+        text = self.get_resolved_doctree(docname).pformat()
+        return text.replace(str(self._app.srcdir) + os.sep, "<src>/").rstrip()
 
 
 class CreateDoctree:
