@@ -1,3 +1,3 @@
 """Helpful pytest fixtures for sphinx extensions."""
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
