@@ -7,9 +7,10 @@ from sphinx.builders.dummy import DummyBuilder
 
 
 class DoctreeBuilder(DummyBuilder):
-    """A builder that only builds the the initial doctrees, without post-transforms.
+    """A builder that only builds the the initial doctrees,
+    without subsequent events or post-transforms.
 
-    The doctrees are stored in the `doctrees` attribute, rather than be saved to disk.
+    The doctrees are stored in the `doctrees` attribute, rather than saved to disk.
     """
 
     name = "doctree"
@@ -21,9 +22,9 @@ class DoctreeBuilder(DummyBuilder):
         # save the doctree instead of pickling to disk
         self.doctrees[docname] = doctree
 
-    def write(self, *args, **kwargs) -> None:
-        # don't apply post-transforms
-        pass
+    def build(self, *args, **kwargs) -> None:
+        # don't run anything after the initial doctree reads
+        self.read()
 
 
 def setup(app: Sphinx) -> dict:
