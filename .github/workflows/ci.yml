@@ -45,3 +45,26 @@ jobs:
         pip install -e .
     - name: Run pytest
       run: pytest
+
+  publish:
+
+    name: Publish to PyPi
+    needs: [pre-commit, tests]
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.8"
+    - name: install flit
+      run: |
+        pip install flit~=3.4
+    - name: Build and publish
+      run: |
+        flit publish
+      env:
+        FLIT_USERNAME: __token__
+        FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
