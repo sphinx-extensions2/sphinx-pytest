@@ -18,7 +18,9 @@ class DoctreeBuilder(DummyBuilder):
     def init(self) -> None:
         self.doctrees: dict[str, nodes.document] = {}
 
-    def write_doctree(self, docname: str, doctree: nodes.document, *, _cache: bool = True) -> None:
+    def write_doctree(
+        self, docname: str, doctree: nodes.document, *, _cache: bool = True
+    ) -> None:
         # save the doctree instead of pickling to disk
         self.doctrees[docname] = doctree
 
