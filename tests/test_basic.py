@@ -2,7 +2,7 @@ def test_basic(sphinx_doctree):
     result = sphinx_doctree("abc")
     assert (
         result.pformat()
-        == '<document source="<src>/index.rst" translation_progress="{\'total\': 0, \'translated\': 0}">\n    <paragraph>\n        abc'
+        == "<document source=\"<src>/index.rst\" translation_progress=\"{'total': 0, 'translated': 0}\">\n    <paragraph>\n        abc"
     )
 
 
@@ -41,6 +41,6 @@ def test_html_builder(sphinx_doctree):
     result = sphinx_doctree(".. only:: html\n\n   abc\n\n.. only:: latex\n\n   xyz\n")
     assert (
         result.get_resolved_pformat()
-        == '<document source="<src>/index.rst" translation_progress="{\'total\': 0, \'translated\': 0}">\n    <paragraph>\n        abc'
+        == "<document source=\"<src>/index.rst\" translation_progress=\"{'total': 0, 'translated': 0}\">\n    <paragraph>\n        abc"
         '\n    <comment xml:space="preserve">'
     )
