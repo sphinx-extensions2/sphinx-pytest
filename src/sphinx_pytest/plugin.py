@@ -5,10 +5,13 @@ from collections.abc import Mapping
 import os
 from pathlib import Path
 from typing import Any, Iterator
+from packaging.version import Version
 
 from docutils import nodes
 from docutils.core import Publisher
 import pytest
+
+import sphinx
 from sphinx.environment import BuildEnvironment
 from sphinx.testing.path import path
 from sphinx.testing.util import SphinxTestApp
@@ -16,6 +19,8 @@ from sphinx.testing.util import SphinxTestApp
 from .builders import DoctreeBuilder
 
 pytest_plugins = ("sphinx.testing.fixtures",)
+
+SPHINX_VERSION = Version(sphinx.__version__)
 
 
 @pytest.fixture
@@ -143,7 +148,7 @@ class CreateDoctree:
 
         return AppWrapper(
             self._app_cls(
-                srcdir=path(str(self.srcdir)),
+                srcdir=self.srcdir if SPHINX_VERSION >= Version("7.0.0") else path(str(self.srcdir)),
                 buildername=self.buildername,
                 confoverrides=self._confoverrides,
                 **kwargs,

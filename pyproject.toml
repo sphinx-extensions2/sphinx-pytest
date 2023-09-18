@@ -17,7 +17,7 @@ classifiers = [
 ]
 keywords = ["sphinx", "pytest"]
 requires-python = ">=3.7"
-dependencies = ["sphinx", "pytest"]
+dependencies = ["sphinx", "pytest", "packaging"]
 
 [project.urls]
 Homepage = "https://github.com/chrisjsewell/sphinx-pytest"
