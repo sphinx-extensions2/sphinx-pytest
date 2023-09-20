@@ -20,7 +20,7 @@ requires-python = ">=3.7"
 dependencies = ["sphinx", "pytest"]
 
 [project.urls]
-Homepage = "https://github.com/chrisjsewell/sphinx-pytest"
+Homepage = "https://github.com/sphinx-extensions2/sphinx-pytest"
 
 [project.entry-points."pytest11"]
 sphinx_test = "sphinx_pytest.plugin"
