@@ -95,8 +95,12 @@ class AppWrapper:
     ) -> str:
         """Return an indented pseudo-XML representation.
 
-        By default, the src directory is replaced with <src>, for reproducibility,
-        add the ``translation_progress`` is removed (added in sphinx 7.1).
+        The src directory is replaced with <src>, for reproducibility.
+
+        :param pop_doc_attrs: Remove these attributes of the doctree node,
+            before converting to text.
+            By default, ``translation_progress`` is removed for compatibility
+            (added in sphinx 7.1).
         """
         doctree = self.doctrees[docname].deepcopy()
         for attr_name in pop_doc_attrs:
@@ -120,8 +124,12 @@ class AppWrapper:
     ) -> str:
         """Return an indented pseudo-XML representation, after post-transforms.
 
-        By default, the src directory is replaced with <src>, for reproducibility,
-        add the ``translation_progress`` is removed (added in sphinx 7.1).
+        The src directory is replaced with <src>, for reproducibility.
+
+        :param pop_doc_attrs: Remove these attributes of the doctree node,
+            before converting to text.
+            By default, ``translation_progress`` is removed for compatibility
+            (added in sphinx 7.1).
         """
         doctree = self.get_resolved_doctree(docname)
         for attr_name in pop_doc_attrs:
@@ -156,16 +164,17 @@ class CreateDoctree:
         self.srcdir.joinpath(filename).parent.mkdir(parents=True, exist_ok=True)
         self.srcdir.joinpath(filename).write_text(content, encoding="utf8")
 
+        srcdir: Any
         if sphinx_version_info >= (7, 2):
             srcdir = self.srcdir
         else:
             from sphinx.testing.path import path
 
-            srcdir = path(str(self.srcdir))  # type: ignore
+            srcdir = path(str(self.srcdir))
 
         return AppWrapper(
             self._app_cls(
-                srcdir=srcdir,  # type: ignore
+                srcdir=srcdir,
                 buildername=self.buildername,
                 confoverrides=self._confoverrides,
                 **kwargs,
