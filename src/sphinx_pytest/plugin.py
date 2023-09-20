@@ -9,8 +9,8 @@ from typing import Any, Iterator
 from docutils import nodes
 from docutils.core import Publisher
 import pytest
+from sphinx import version_info as sphinx_version_info
 from sphinx.environment import BuildEnvironment
-from sphinx.testing.path import path
 from sphinx.testing.util import SphinxTestApp
 
 from .builders import DoctreeBuilder
@@ -90,12 +90,18 @@ class AppWrapper:
         except AttributeError:
             return Doctrees(self.env)
 
-    def pformat(self, docname: str = "index") -> str:
+    def pformat(
+        self, docname: str = "index", pop_doc_attrs=("translation_progress",)
+    ) -> str:
         """Return an indented pseudo-XML representation.
 
-        The src directory is replaced with <src>, for reproducibility.
+        By default, the src directory is replaced with <src>, for reproducibility,
+        add the ``translation_progress`` is removed (added in sphinx 7.1).
         """
-        text = self.doctrees[docname].pformat()
+        doctree = self.doctrees[docname].deepcopy()
+        for attr_name in pop_doc_attrs:
+            doctree.attributes.pop(attr_name, None)
+        text = doctree.pformat()
         return text.replace(str(self._app.srcdir) + os.sep, "<src>/").rstrip()
 
     def get_resolved_doctree(self, docname: str = "index") -> nodes.document:
@@ -109,9 +115,18 @@ class AppWrapper:
         # https://github.com/sphinx-doc/sphinx/blob/05a898ecb4ff8e654a053a1ba5131715a4514812/sphinx/environment/__init__.py#L538
         return doctree
 
-    def get_resolved_pformat(self, docname: str = "index") -> str:
-        """Return the pformat of the doctree after post-transforms."""
-        text = self.get_resolved_doctree(docname).pformat()
+    def get_resolved_pformat(
+        self, docname: str = "index", pop_doc_attrs=("translation_progress",)
+    ) -> str:
+        """Return an indented pseudo-XML representation, after post-transforms.
+
+        By default, the src directory is replaced with <src>, for reproducibility,
+        add the ``translation_progress`` is removed (added in sphinx 7.1).
+        """
+        doctree = self.get_resolved_doctree(docname)
+        for attr_name in pop_doc_attrs:
+            doctree.attributes.pop(attr_name, None)
+        text = doctree.pformat()
         return text.replace(str(self._app.srcdir) + os.sep, "<src>/").rstrip()
 
 
@@ -141,9 +156,16 @@ class CreateDoctree:
         self.srcdir.joinpath(filename).parent.mkdir(parents=True, exist_ok=True)
         self.srcdir.joinpath(filename).write_text(content, encoding="utf8")
 
+        if sphinx_version_info >= (7, 2):
+            srcdir = self.srcdir
+        else:
+            from sphinx.testing.path import path
+
+            srcdir = path(str(self.srcdir))  # type: ignore
+
         return AppWrapper(
             self._app_cls(
-                srcdir=path(str(self.srcdir)),
+                srcdir=srcdir,  # type: ignore
                 buildername=self.buildername,
                 confoverrides=self._confoverrides,
                 **kwargs,
