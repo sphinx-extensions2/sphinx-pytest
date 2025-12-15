@@ -1,4 +1,5 @@
 """Sphinx builders for pytest."""
+
 from __future__ import annotations
 
 from docutils import nodes
