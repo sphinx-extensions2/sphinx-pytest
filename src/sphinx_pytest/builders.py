@@ -1,4 +1,5 @@
 """Sphinx builders for pytest."""
+
 from __future__ import annotations
 
 from docutils import nodes
@@ -18,13 +19,13 @@ class DoctreeBuilder(DummyBuilder):
     def init(self) -> None:
         self.doctrees: dict[str, nodes.document] = {}
 
-    def write_doctree(
+    def write_doctree(  # type: ignore[misc]
         self, docname: str, doctree: nodes.document, *, _cache: bool = True
     ) -> None:
         # save the doctree instead of pickling to disk
         self.doctrees[docname] = doctree
 
-    def build(self, *args, **kwargs) -> None:
+    def build(self, *args, **kwargs) -> None:  # type: ignore[misc]
         # don't run anything after the initial doctree reads
         self.read()
 

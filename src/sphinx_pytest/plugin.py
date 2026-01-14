@@ -1,17 +1,19 @@
 """The pytest plugin."""
+
 from __future__ import annotations
 
-from collections.abc import Mapping
 import os
+from collections.abc import Iterator, Mapping
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
+import pytest
 from docutils import nodes
 from docutils.core import Publisher
-import pytest
 from sphinx import version_info as sphinx_version_info
 from sphinx.environment import BuildEnvironment
 from sphinx.testing.util import SphinxTestApp
+from sphinx.transforms import SphinxTransformer
 
 from .builders import DoctreeBuilder
 
@@ -32,6 +34,8 @@ def sphinx_doctree_no_tr(make_app: type[SphinxTestApp], tmp_path: Path, monkeypa
         pass
 
     monkeypatch.setattr(Publisher, "apply_transforms", _apply_transforms)
+    # in sphinx >= 9.0.0 SphinxTransformer is used
+    monkeypatch.setattr(SphinxTransformer, "apply_transforms", _apply_transforms)
     yield CreateDoctree(app_cls=make_app, srcdir=tmp_path / "src")
 
 
@@ -44,8 +48,8 @@ class Doctrees(Mapping):
     def __getitem__(self, key: str) -> nodes.document:
         try:
             return self._env.get_doctree(key)
-        except FileNotFoundError:
-            raise KeyError(key)
+        except FileNotFoundError as err:
+            raise KeyError(key) from err
 
     def __iter__(self) -> Iterator[str]:
         return iter(self._env.found_docs)
@@ -71,7 +75,7 @@ class AppWrapper:
 
     @property
     def builder(self) -> DoctreeBuilder:
-        return self._app.builder  # type: ignore
+        return self._app.builder  # type: ignore[return-value]
 
     def build(self) -> AppWrapper:
         self._app.build()
@@ -79,7 +83,7 @@ class AppWrapper:
 
     @property
     def warnings(self) -> str:
-        text = self._app._warning.getvalue()
+        text = self._app._warning.getvalue()  # type: ignore[attr-defined]
         return text.replace(str(self._app.srcdir), "<src>")
 
     @property
