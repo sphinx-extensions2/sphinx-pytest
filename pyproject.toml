@@ -39,7 +39,7 @@ mypy = [
     "sphinx~=8.0",
     "pytest",
 ]
-ruff = ["ruff~=0.9"]
+ruff = ["ruff~=0.15"]
 
 [tool.ruff.lint]
 extend-select = ["B", "C4", "FA", "I", "ICN", "ISC", "N", "PERF", "PGH", "PIE", "RUF", "SIM", "UP"]
