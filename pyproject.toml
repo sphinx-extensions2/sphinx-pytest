@@ -36,7 +36,7 @@ doctree = "sphinx_pytest.builders"
 mypy = [
     "mypy==1.19.1",
     "types-docutils",
-    "sphinx~=8.0",
+    "sphinx~=8.1",
     "pytest",
 ]
 ruff = ["ruff~=0.9"]
