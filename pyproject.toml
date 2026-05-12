@@ -34,7 +34,7 @@ doctree = "sphinx_pytest.builders"
 
 [dependency-groups]
 mypy = [
-    "mypy==1.19.1",
+    "mypy==2.1.0",
     "types-docutils",
     "sphinx~=8.0",
     "pytest",
