@@ -21,6 +21,7 @@ pip install sphinx-pytest
 ```python
 from sphinx_pytest.plugin import CreateDoctree
 
+
 def test_no_transforms(sphinx_doctree_no_tr: CreateDoctree):
     """Return the doctree, before any transforms have been applied."""
     sphinx_doctree_no_tr.set_conf({"language": "en"})
